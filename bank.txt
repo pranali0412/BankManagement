@@ -1,0 +1,366 @@
+import re
+
+def validatebankname(bankname):
+    if len(bankname) >= 3 and len(bankname) <= 50:
+        if all(char.isalpha() or char.isspace() for char in bankname):
+            return True
+        else:
+            return False
+
+def validateaccnum(accnum):
+    if len(accnum) >= 6 and len(accnum) <= 12 and accnum.isalnum():
+        return True
+    else:
+        return False
+
+def validateaccholdername(accholdername):
+    if len(accholdername) >= 2 and len(accholdername) <= 50 and accholdername.isalpha():
+        return True
+    else:
+        return False
+def validatecity(state,city):
+    sc = {"Maharashtra":["Mumbai","Pune","Nashik"],
+        "MadhyaPradesh":["Bhopal","Indore","Ujjain"]}
+    v = sc[state]
+    if city in v:
+        return True
+    else:
+        return False
+def validateage(age):
+    if age.isdigit():
+        age = int(age)
+        if 18 <= age <= 100:
+            return True
+    return False
+
+def validatepan(pan):
+    exp = '^[A-Z]{5}[0-9]{4}[A-Z]{1}$'
+    if re.match(exp, pan):
+        return True
+    else:
+        return False
+
+def validatetypeofaccount(typeofaccount):
+    validaccount = ["savings", "current", "fixed deposit"]
+    lowercase_input = typeofaccount.lower()
+    if lowercase_input in validaccount:
+        return True
+    else:
+        return False
+        
+def validatedateofbirth(dateofbirth):
+    if len(dateofbirth) != 10 or dateofbirth[4] != '-' or dateofbirth[7] != '-':
+        return False
+    year, month, day = dateofbirth.split('-')
+    if not (year.isdigit() and month.isdigit() and day.isdigit()):
+        return False
+
+    year, month, day = int(year), int(month), int(day)
+    if not (1900 <= year <= 2023):
+        return False
+    if not (1 <= month <= 12):
+        return False
+    if month in [1, 3, 5, 7, 8, 10, 12]:
+        if not (1 <= day <= 31):
+            return False
+    elif month in [4, 6, 9, 11]:
+        if not (1 <= day <= 30):
+            return False
+    elif month == 2:
+        if year % 4 == 0:
+            if not (1 <= day <= 29):
+                return False
+        else:
+            if not (1 <= day <= 28):
+                return False
+    return True
+    
+def validateaddress(address):
+    if len(address) >= 5 and len(address) <= 200 and not address.isdigit():
+        return True
+    else:
+        return False
+
+def validatedeposit(amount,accountnum):
+    balance = 0
+    if amount.isdigit():
+        amount = float(amount)
+        if amount >0:
+            accountnum.balance +=amount
+            print("Valid deposited amount:", amount)
+            print("New Acc Balance:",accountnum.balance)
+            print("Amount is credited")
+        else:
+            print("Invalid Amount")
+    else:
+        print("Invalid deposit Amount")
+        
+def validatewithdraw(amount,accountnum): 
+    if amount.isdigit():
+        withdrawal_amt = int(amount)
+        if withdrawal_amt > 0 and withdrawal_amt <= accountnum.balance:
+            accountnum.balance -= withdrawal_amt
+            print("Valid withdrawal amount:", withdrawal_amt)
+            print("New Acc Balance:",accountnum.balance)
+            print("Amount is Debitted")
+        else:
+            print("Invalid withdrawal amount. Make sure it is a positive numeric value and you have sufficient funds.")
+    else:
+        print("Invalid input. Please enter a positive numeric value for withdrawal.")
+
+def validateAdhar(AdharNo):
+    if len(AdharNo)==12 and AdharNo.isdigit():
+        return True
+    else:
+        return False
+
+
+class Bank:
+    def __init__(self, aaccountnum, bankname, accountholdername, AdharNo,age, pan, typeofaccount,state,city,dateofbirth, address,balance):
+        self.aaccountnum = aaccountnum
+        self.bankname = bankname
+        self.accountholdername = accountholdername
+        self.AdharNo=AdharNo
+        self.age = age
+        self.pan = pan
+        self.typeofaccount = typeofaccount
+        self.balance = balance
+        self.dateofbirth = dateofbirth
+        self.city = city
+        self.state = state
+        self.address = address  # Define the address attribute
+        self.balance=balance
+
+    def display(self):
+        print(self.aaccountnum, " ", 
+        self.bankname, " ", 
+        self.accountholdername, " ", 
+        self.AdharNo," ",
+        self.age, " ",
+        self.pan," ", 
+        self.typeofaccount," ",
+        self.dateofbirth," ", 
+        self.city," ",
+        self.state," ", 
+        self.address, " ",
+        self.balance," ")
+    
+    def validatebalanceenquiry(self):
+        return self.balance
+        
+    def validatefundtransfer(self,amount,receiveraccno):
+        if amount.isdigit():
+            receiveramt = int (amount)
+            if receiveramt > 0 and receiveramt <=self.balance:
+                if receiveraccno == self:
+                    print("Same Transfer is not Allowed")
+                else:
+                        if receiveraccno:
+                            self.balance -=receiveramt
+                            receiveraccno.balance +=receiveramt
+                            print("Successfully Transferd")
+                        else:
+                            print("Invalid account ")
+            else:
+                print("Invalid transfer amount")
+        else:
+            print("Invalid input")
+bank = []
+while True:
+    print("1: Add the Account")
+    print("2: Display Account Information")
+    print("3: Delete the Account")
+    print("4: Update the Account")
+    print("5: Deposit Money")
+    print("6: Withdraw Money")
+    print("7: Funds Transfer")
+    print("8: Search the Account")
+    print("9: Balance Enquiry")
+    choice = int(input("Enter Your Choice"))
+    if choice == 1:
+        accountnum = input("Enter accountnum")
+        if validateaccnum(accountnum):
+            bankname = input("Enter Bank Name")
+            if validatebankname(bankname):
+                accountholdername = input("Enter Account Holder Name :")
+                if validateaccholdername(accountholdername):
+                    age = input("Enter Age: ")
+                    if validateage(age):
+                        AdharNo = input("Enter Aadhar Number :")
+                        if validateAdhar(AdharNo):
+                            print("Step - 1 Completed! Stay connected")
+                            pan = input("Enter Pan Number")
+                            if validatepan(pan):
+                                typeofaccount = input("Enter the Type of account")
+                                if validatetypeofaccount(typeofaccount):
+                                    dateofbirth = input("Enter the Date of Birth")
+                                    if validatedateofbirth(dateofbirth):
+                                        state = input("Enter the State")
+                                        city = input("Enter the City :")
+                                        if validatecity(state,city):
+                                            address = input("Enter the address of account holder")
+                                            balance = 0
+                                            bank.append(Bank(accountnum, bankname, accountholdername, age, pan, typeofaccount,dateofbirth,state,city,address,balance))
+                                    else:
+                                        print("Invalid...city")
+                                else:
+                                    print("Invalid Date-of-Birth")
+                            else:
+                                print("Invalid ...! Enter a valid address.")
+                        else:
+                            print("Invalid ...! Enter the Correct PAN Number")
+                    else:
+                        print("You have entered the wrong age...")
+                else:
+                    print("Please enter a valid Account Holder Name")
+            else:
+                print("Please enter a valid Bank Name")
+        else:
+            print("Please enter a valid Account Number of 12 Digits")
+   
+    elif choice == 2:
+        if not bank:
+            print("No accounts to display.")
+        else:
+            print("Displaying Account Information:")
+            for acc in bank:
+                acc.display()
+                
+    elif choice ==3:
+        accountnum =  input("Enter the account Number")
+        for i in bank:
+            if i.aaccountnum==accountnum:
+                bank.remove(i)
+                print(" Successfully Deleted.....Press 2 to confirm")
+                
+    elif choice == 4:
+        print("Press I to update the name of account holder")
+        print("Press II to update address of Account Holder")
+        print("Press III to update DOB of Account Holder")
+        ch = input("Enter your Choice to Update")
+        if ch == "I":
+            acc = input("Enter the account Number")
+            for i in bank:
+                if i.aaccountnum == acc:
+                    name = input("Enter the Updated Name")
+                    i.accountholdername = name
+                    print(" Successfully Updated.....Press 2")
+        elif ch == "II":
+            acc = input("Enter the account Number")
+            for i in bank:
+                if i.aaccountnum == acc:
+                    address1 = input("Enter the Updated address")
+                    i.address = address1
+                    print(" Successfully Updated.....Press 2")
+        elif ch == "III":
+                    dateofbirth1 = input("Enter the Updated Date of Birth in YYYY-MM-DD")
+                    i.dateofbirth = dateofbirth1
+                    print(" Successfully Updated.....Press 2")
+        else:
+            print("Invalid Choice... To Update")
+            
+    elif choice == 5:
+        print ("! Welcome the the Bank Deposit System !")
+        acc = input("Enter the Account Number ")
+        for i in bank:
+           if i.aaccountnum == acc:
+                while True:
+                    deposit_amtinput =input("enter the amount to be Deposited or press q to quit")
+                    if deposit_amtinput.lower() =='q':
+                        print("Good Bye")
+                        break
+                    deposit_amt = validatedeposit(deposit_amtinput,i)
+                    if deposit_amt is not None:
+                        i.balance +=deposit_amt
+                        print("Amount of", deposit_amt, "credited to the account. New Balance:", i.balance)
+    elif choice==6:
+        print("! Welcome to the Bank withdrawal System !")
+        acc = input("Enter the Account Number ")
+        for i in bank:
+            if i.aaccountnum == acc:
+                while True:
+                    deposit_amtinput =input("enter the amount to be withdraw or press q to quit")
+                    if deposit_amtinput.lower() =='q':
+                        print("Good Bye")
+                        break
+                    deposit_amt = validatewithdraw(deposit_amtinput,i)
+                    if deposit_amt is not None:
+                        i.balance -=deposit_amt
+                        print("Amount of", deposit_amt, "Debited from the account. New Balance:", i.balance)
+     
+    elif choice ==7:
+        print("! Welcome to the Fund Transfer System !")
+        source_accno = input("Enter the Account Number of the source account")
+        destination_accno = input("Enter the Account Number of the Destination account")
+        
+        source_accno1 = None
+        destination_accno1=None
+        
+        for i in bank:
+            if i.aaccountnum == source_accno:
+                source_accno1 = i
+            elif i.aaccountnum == destination_accno:
+                destination_accno1 = i
+        
+        if source_accno1 is None:
+            print("Source is not found")
+        elif destination_accno1 is None:
+            print("Destination is not found")
+        else:
+            amount = input("Enter the amount to transfer")
+            source_accno1.validatefundtransfer(amount,destination_accno1)
+                    
+    elif choice == 8:
+        print("Press A to search by account Number")
+        print("Press B to search by Account Holder Name")
+        print("Press C to search by Type of Account")
+        ch = input("Enter your Choice to Search")
+        if ch == "A":
+            acc = input("Enter the account Number")
+            for i in bank:
+                if i.aaccountnum == acc:
+                    i.display()
+                else:
+                    print("This Account doesn't exist")
+        elif ch == "B":
+            accholder = input("Enter the account Holder's Name")
+            for i in bank:
+                if i.accountholdername == accholder:
+                    i.display()
+                else:
+                    print("This Account Holder doesn't exist")
+        elif ch == "C":
+            typeofacc = input("Enter the Type of Account")
+            for i in bank:
+                if i.typeofaccount == typeofacc:
+                    i.display()
+                else:
+                    print("This Type of Account doesn't exist")
+        else:
+            print("You've Entered the Wrong Option......!")
+            
+    elif choice == 6:
+        aaccountnum = input("Enter Account Number")
+        for acc in bank:
+            if acc.aaccountnum == aaccountnum:
+                amount = int(input("Enter the withdrawal amount: "))
+                acc.withdraw(amount)
+                break
+        else:
+            print("Account Not Found")
+            
+    elif choice ==9:
+        aaccountnum = input("Enter Account Number")
+        found = False
+        for acc in bank:
+            if acc.aaccountnum == aaccountnum:
+                balance =acc.validatebalanceenquiry()
+                print(f"Account Balance for Account Number {aaccountnum}: {balance}")
+                found = True
+                break
+        if not found:
+            print("Account not Found")
+        
+        
+    else:
+        print("Invalid Choice")
